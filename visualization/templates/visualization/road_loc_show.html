@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>南山区道路</title>
+    <script type="text/javascript"
+            src="https://webapi.amap.com/maps?v=1.4.15&key=f8188c8ddd28b384b3a636476a6540e5&plugin=AMap.RoadInfoSearch"></script>
+    <style type="text/css">
+        #container {
+            width: 1024px;
+            height: 512px;
+            float: unset;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<script type="text/javascript">
+    var map = new AMap.Map('container', {
+        expandZoomRange: true,
+        zoom: 13,//级别
+        zooms: [3, 20],
+        center: [113.930483, 22.517889],//中心点坐标
+        viewMode: '3D'//使用3D视图
+    });
+
+    if ('{{ block_info }}' != null) {
+            {% for road in roads %}
+            var gps = [{{ road.longitude }}, {{ road.latitude }}];
+            AMap.convertFrom(gps, 'baidu', function (status, result) {
+                if (result.info === 'ok') {
+                    var lnglats = result.locations; // Array.<LngLat>
+                    let block_marker = new AMap.Marker({
+                        position: new AMap.LngLat(lnglats[0].lng, lnglats[0].lat),
+                        //title: '{{ forloop.counter0 }}, {{ road.road }} ',
+                        label: {content: '{{ forloop.counter0 }}, {{ road.road }} '}
+                    });
+                    map.add(block_marker);
+                }
+            });
+        {% endfor %}
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+{% load static %}
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.15&key=f8188c8ddd28b384b3a636476a6540e5&plugin=AMap.RoadInfoSearch,AMap.MouseTool"></script>
+<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="{% static 'visualization/data_transfer.js' %}"></script>
+<script type="text/javascript" src="{% static 'visualization/map_draw.js' %}"></script>
+<style type="text/css">
+    div {
+        float: left;
+    }
+
+    #container {
+        width: 100%;
+        height: 100%;
+        float: unset;
+    }
+
+    #submit_path_div {
+        padding-left: 20px;
+    }
+
+    #search_div {
+        padding-left: 20px;
+    }
+</style>
+<div id="container"></div>
+<div id="search_div">
+    <form action="{% url 'visualization:edit' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="road_name">
+        <input type="submit" value="确定" name="submit"/><br/>
+        <label for="east">东</label>
+        <input type="radio" value="东侧" name="direction" id="east"/><br/>
+        <label for="west">西</label>
+        <input type="radio" value="西侧" name="direction" id="west"/>
+        <label for="left">左</label>
+        <input type="radio" value="靠左" name="left_or_right" id="left"><br/>
+        <label for="south">南</label>
+        <input type="radio" value="南侧" name="direction" id="south"/>
+        <label for="right">右</label>
+        <input type="radio" value="靠右" name="left_or_right" id="right"/><br/>
+        <label for="north">北</label>
+        <input type="radio" value="北侧" name="direction" id="north"/>
+    </form>
+</div>
+<div id="submit_path_div">
+    <form>
+        <input type="button" value="追加(勿重复点)" name="append"
+               onclick="update_path_info('{% url 'visualization:update_path' %}',
+                       path_info, '{{ block_info.block_id }}')
+                       "/>
+        <input type="button" value="擦除(离开标注模式)" name="delete"
+               onclick="leave_mouse_tool()"/><br/>
+    </form>
+</div>
+
+<script type="text/javascript">
+    var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+    var map = new AMap.Map('container', {
+        expandZoomRange: true,
+        zoom: 15,//级别
+        zooms: [3, 20],
+        center: [113.930483, 22.517889],//中心点坐标
+        viewMode: '3D'//使用3D视图
+    });
+
+    let roadSearch = new AMap.RoadInfoSearch({city: '深圳'});
+    if ('{{ block_info }}' === 'null') {
+        console.log('{{ block_info }}');
+    }
+    else {
+        var gps = [{{ block_info.longitude }}, {{ block_info.latitude }}];
+        AMap.convertFrom(gps, 'baidu', function (status, result) {
+            if (result.info === 'ok') {
+                var lnglats = result.locations; // Array.<LngLat>
+                let block_marker = new AMap.Marker({
+                    position: new AMap.LngLat(lnglats[0].lng, lnglats[0].lat),
+                    title: '{{ block_info.road }} '
+                });
+                map.add(block_marker);
+            }
+        });
+        roadSearch.roadInfoSearchByRoadName('{{ block_info.road }}', draw_edit_road);
+        document.write('<div>{{ block_info.road }} ', '{{ block_info.left_or_right }} ', '{{ block_info.direction }}<br/>',
+            '{{ block_info.longitude }}<br/>', '{{ block_info.latitude }}<div/>')
+
+        {% for seg in shape %}
+            var polyline = new AMap.Polyline({
+                path: {{ seg.shape }},
+                bubble: true,
+                borderWeight: 2, // 线条宽度，默认为 1
+                strokeColor: 'red', // 线条颜色
+                lineJoin: 'round', // 折线拐点连接处样式
+                extData: {{ seg.id }},
+            });
+            polyline.on('click', delete_seg, {URL: '{% url 'visualization:delete_seg' %}'})
+            // 将折线添加至地图实例
+            map.add(polyline);
+        {% endfor %}
+        // 为新shape预留的数组
+        window.path_info = []
+        var mouseTool = new AMap.MouseTool(map);   //在地图中添加MouseTool插件
+        var marker = mouseTool.marker(); //用鼠标工具画点标注
+        AMap.event.addListener(mouseTool, 'draw', function (e) { //添加事件
+            var position = e.obj.getPosition();
+            path_info[path_info.length] = [position.getLng(), position.getLat()]
+        });
+    }
+</script>

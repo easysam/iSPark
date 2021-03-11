@@ -1,0 +1,1130 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>深圳市南山区泊车数据可视化</title>
+    <!--设置是否为缩放模式 -->
+    <meta name="viewport" content="width=device-width">
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <!--echarts JS-->
+    <script type="text/javascript" src="{% static 'visualization/echarts.js' %}"></script>
+
+    <!-- 轮播swiper文件 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'visualization/swiper.min.css' %}"/>
+    <script type="text/javascript" src="{% static 'visualization/swiper.min.js' %}"></script>
+
+    <!--界面样式-->
+    {#    <script type="text/javascript" src="{% static 'visualization/visual.js' %}"></script>#}
+    <script type="text/javascript" src="{% static 'visualization/china.js' %}"></script>
+    <script type="text/javascript" src="{% static 'visualization/chartMap.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'visualization/visual.css' %}"/>
+
+
+    {# amap api #}
+    <link rel="stylesheet" type="text/css" href="{% static 'visualization/on_map.css' %}"/>
+    <script type="text/javascript"
+            src="https://webapi.amap.com/maps?v=1.4.15&key=f8188c8ddd28b384b3a636476a6540e5&plugin=AMap.MouseTool">
+    </script>
+    {# customize #}
+    <link rel="stylesheet" type="text/css" href="{% static 'visualization/map_for_echarts_version.css' %}"/>
+    <script type="text/javascript" src="{% static 'visualization/map_draw.js' %}"></script>
+
+</head>
+<body class="ksh">
+<div id="load">
+    <div class="load_img">
+        <!-- 加载动画 -->
+        <img class="jzxz1" src="{% static "visualization/images/jzxz1.png" %}">
+        <img class="jzxz2" src="{% static "visualization/images/jzxz2.png" %}">
+    </div>
+</div>
+<div class="head_top">
+    <span class="page_title_1" style="alignment: center">
+        <span style="position: absolute">
+            <form class="form-inline" action="{% url 'visualization:test' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group mb-2">
+
+                    <select class=" form-control custom-select bg-dark text-light selectpicker show-tick" name="page_date" id="inputGroupSelect02">
+                        <option selected>{{ page_date }}</option>
+                        <option value="2018-09-01">2018-09-01</option>
+                        <option value="2018-09-02">2018-09-02</option>
+                        <option value="2018-09-03">2018-09-03</option>
+                        <option value="2018-09-04">2018-09-04</option>
+                        <option value="2018-09-05">2018-09-05</option>
+                        <option value="2018-09-06">2018-09-06</option>
+                        <option value="2018-09-07">2018-09-07</option>
+                    </select>
+                    <input type="text" name="page_time" class="form-control mx-sm-1 bg-dark text-light" id="inputPassword2"
+                           value='{{ page_time }}'>
+{#                    <select class="custom-select mx-sm-3" name="page_time" id="inputGroupSelect02">#}
+{#                        <option selected>{{ page_time }}</option>#}
+{#                        <option value="10:00:00">10:00:00</option>#}
+{#                        <option value="10:30:00">10:30:00</option>#}
+{#                        <option value="11:00:00">11:00:00</option>#}
+{#                        <option value="11:30:00">11:30:00</option>#}
+{#                        <option value="12:00:00">12:00:00</option>#}
+{#                        <option value="12:30:00">12:30:00</option>#}
+{#                        <option value="13:00:00">13:00:00</option>#}
+{#                        <option value="13:30:00">13:30:00</option>#}
+{#                        <option value="14:00:00">14:00:00</option>#}
+{#                        <option value="14:30:00">14:30:00</option>#}
+{#                        <option value="15:00:00">15:00:00</option>#}
+{#                        <option value="15:30:00">15:30:00</option>#}
+{#                        <option value="16:00:00">16:00:00</option>#}
+{#                        <option value="16:30:00">16:30:00</option>#}
+{#                        <option value="17:00:00">17:00:00</option>#}
+{#                        <option value="17:30:00">17:30:00</option>#}
+{#                        <option value="18:00:00">18:00:00</option>#}
+{#                        <option value="18:30:00">18:30:00</option>#}
+{#                        <option value="19:00:00">19:00:00</option>#}
+{#                        <option value="19:30:00">19:30:00</option>#}
+{#                    </select>#}
+                </div>
+                <button type="submit" class="btn btn-dark mb-2">更改</button>
+{#                <button type="button" class="btn btn-primary mb-2">转为实时</button>#}
+            </form>
+
+        </span>
+    </span>
+    <span class="page_title_2">深圳市南山区泊车数据可视化</span>
+    <span class="page_title_3" style="alignment: center;word-break:break-word;">根据数据集，本演示系统展示了2018年9月第1周的数据</span>
+</div>
+<div class="visual">
+    <div class="visual_left">
+        <div class="visual_box">
+            <div class="visual_title">
+                <span>南山区平均占用率</span>
+                <img src="{% static "visualization/images/ksh33.png" %}" alt="test">
+            </div>
+            <div class="btn-group btn-group-toggle col-xl" data-toggle="buttons">
+                <label class="btn btn-outline-secondary" onClick="draw_aggregate_rates('day')">
+                    <input type="radio" name="aggregate_scale" id="option1" autocomplete="off" checked>
+                    今日
+                </label>
+                <label class="btn btn-outline-secondary active" onClick="draw_aggregate_rates('week')">
+                    <input type="radio" name="aggregate_scale" id="option2" autocomplete="off">
+                    一周
+                </label>
+                <label class="btn btn-outline-secondary" onClick="draw_aggregate_rates('avg')">
+                    <input type="radio" name="aggregate_scale" id="option3" autocomplete="off">
+                    周平均
+                </label>
+            </div>
+            <div class="visual_chart" id="main1">
+
+            </div>
+        </div>
+        <div class="visual_box">
+            <div class="visual_title">
+                <span id="block_occupancy_title">区块占用率</span>
+                <img src="{% static "visualization/images/ksh33.png" %}" alt="test">
+            </div>
+            <div class="btn-group btn-group-toggle col-xl" data-toggle="buttons">
+                <label class="btn btn-outline-secondary" onClick="draw_block_rate('day')">
+                    <input type="radio" name="options" id="option1" autocomplete="off" checked>
+                    今日
+                </label>
+                <label class="btn btn-outline-secondary" onClick="draw_block_rate('week')">
+                    <input type="radio" name="options" id="option2" autocomplete="off">
+                    一周
+                </label>
+                <label class="btn btn-outline-secondary active" onClick="draw_block_rate('avg')">
+                    <input type="radio" name="options" id="option3" autocomplete="off">
+                    周平均
+                </label>
+            </div>
+            <div class="visual_chart" id="main2">
+
+            </div>
+        </div>
+        <div class="visual_box">
+            <div class="visual_title">
+                <span>区块BCU-指数</span>
+                <img src="{% static "visualization/images/ksh33.png" %}" alt="test">
+            </div>
+            <div class="visual_chart sfzcll" id="main3">
+
+
+            </div>
+        </div>
+    </div>
+    <div class="visual_con">
+        <div class="visual_conTop">
+            <div class="visual_conTop_box visual_conTop1">
+                <div>
+                    <h3>总区块数</h3>
+                    <p class="p_1">67</p>
+                    {#                    <div class="conTop_smil conTop_smil_1">#}
+                    {#                        <a class="sz">平均占用率:<span>+3%</span><i class="fa fa-long-arrow-up"></i></a>#}
+                    {#                        <a class="xd">平均占用率:<span id="avg_occupancy">{{ avg_occupancy }}%</span><i class="fa fa-long-arrow-down"></i></a>#}
+                    {#                    </div>#}
+                </div>
+            </div>
+            <div class="visual_conTop_box visual_conTop2">
+                <div>
+                    <h3>总泊位数</h3>
+                    <p class="p_2">1735</p>
+                    <div class="conTop_smil conTop_smil_2">
+                        <a class="sz">占用:<span id="berth_occupancy">{{ used_proportion }}%</span><i
+                                class="fa fa-long-arrow-up"></i></a>
+                        <a class="xd">空闲:<span id="berth_available">{{ unused_proportion }}%</span><i
+                                class="fa fa-long-arrow-down"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="visual_conTop_box visual_conTop3">
+                <div>
+                    <h3>区块平均占用率</h3>
+                    <p class="p_3">{{ avg_occupancy }}%</p>
+                    {#                    <div class="conTop_smil conTop_smil_3">#}
+                    {#                        <a class="sz">日环比:<span>+3%</span><i class="fa fa-long-arrow-up"></i></a>#}
+                    {#                        <a class="xd">周环比:<span>-2%</span><i class="fa fa-long-arrow-down"></i></a>#}
+                    {#                    </div>#}
+                </div>
+            </div>
+            {#            <div class="visual_conTop_box visual_conTop4">#}
+            {#                <div>#}
+            {#                    <h3>价格趋势</h3>#}
+            {#                    <p>降</p>#}
+            {#                    <div class="conTop_smil">#}
+            {#                        <a class="sz">涨价:<span>3%</span><i class="fa fa-long-arrow-up"></i></a>#}
+            {#                        <a class="xd">降价:<span>2%</span><i class="fa fa-long-arrow-down"></i></a>#}
+            {#                    </div>#}
+            {#                </div>#}
+            {#            </div>#}
+            <div class="clear"></div>
+        </div>
+        <div class="visual_conBot">
+            <img class="visual_conBot_l" src="{% static "visualization/images/ksh42.png" %}">
+            <img class="visual_conBot_2" src="{% static "visualization/images/ksh43.png" %}">
+            <img class="visual_conBot_3" src={% static "visualization/images/ksh44.png" %}>
+            <img class="visual_conBot_4" src={% static "visualization/images/ksh45.png" %}>
+            <div class="visual_chart_text">
+                <h1>{{ datetime }}</h1>
+                <h2>泊位状态图</h2>
+            </div>
+            <div id="map_container"></div>
+            <div class="visual_conBot_bot">
+                <div class="visualSssf_left">
+                    <h3>热门地点</h3>
+                    {#                    <a style="display:block">热门地点</a>#}
+                    <a>文心四路</a>
+                    <a>文心二路</a>
+                    <a>文心一路</a>
+                    <a>海德二道</a>
+                    <a>海德一道</a>
+                    <a>文心六路</a>
+                    <a class="active">文心三路</a>
+                    <a>南头街</a>
+                    <a>中心路</a>
+                </div>
+                <div class="visualSssf_right">
+                    <div class="visualSssf_right_box" id="main5"></div>
+
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+    <div class="visual_right">
+        <div class="visual_box_rank">
+            <div class="visual_title">
+                <span>实时占用排行</span>
+                <img src="{% static "visualization/images/ksh33.png" %}" alt="test">
+            </div>
+            <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
+                <label class="btn btn-secondary active" onClick="show(1)">
+                    <input type="radio" name="options" id="option1" autocomplete="off" checked> 用量排行
+                </label>
+                <label class="btn btn-secondary" onclick="show(2)">
+                    <input type="radio" name="options" id="option2" autocomplete="off"> 空闲排行
+                </label>
+            </div>
+            <div id="sorted_occupancy"></div>
+        </div>
+
+        <div class="visual_box">
+            <div class="visual_title">
+                <span>总体使用情况</span>
+                <img src="{% static "visualization/images/ksh33.png" %}" alt="test">
+            </div>
+            <div class="swiper-slide" id="sum_up_pie"></div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+
+<script type="text/javascript">
+    //交通流量
+    function draw_aggregate_rates(data_scale) {
+        console.log(data_scale);
+        $.ajax({
+            url: "{% url 'visualization:get_aggregate_rates_data' %}",
+            data: {
+                datetime: '{{ datetime }}',
+                data_scale: data_scale,
+            },
+            success: function (result) {
+                {#                console.log(JSON.parse(result)[1]);#}
+                timeplot = JSON.parse(result)[0];
+                datat = JSON.parse(result)[1];
+                newdata = []
+                if (data_scale == 'day' || data_scale == 'avg') {
+                    timeplot_1 = []
+                    for (var i = 0; i < timeplot.length; i++) {
+                        number = timeplot[i].slice(-9, -3)
+                        timeplot_1.push(number)
+
+                    }
+                    timeplot = timeplot_1
+
+
+                }
+                for (var i = 0; i < datat.length; i++) {
+                    number = datat[i].toFixed(2)
+                    newdata.push(number)
+                }
+                //console.log(result[0], result[1]);
+                var myChart1 = echarts.init(document.getElementById('main1'))
+                myChart1.setOption(
+                    {
+                        grid: {
+                            x: 35,
+                            y: 25,
+                            x2: 35,
+                            y2: 25,
+                        },
+                        tooltip: {//鼠标指上时的标线
+                            trigger: 'axis',//坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
+                            axisPointer: {
+                                lineStyle: {
+                                    color: '#fff'
+                                }
+                            }
+                        },
+                        xAxis: [{
+                            type: 'category',
+                            splitNumber: 100,
+                            boundaryGap: false,
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#57617B'
+                                }
+                            },
+                            axisLabel: {
+                                show: false,
+                                textStyle: {
+                                    color: '#fff',
+                                },
+                            },
+                            data: timeplot
+                        }],
+                        yAxis: [{
+                            type: 'value',
+                            axisTick: {
+                                show: false//是否显示坐标刻度线
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#57617B',
+
+                                }
+                            },
+                            axisLabel: {
+                                margin: 10,
+                                textStyle: {
+                                    fontSize: 14
+                                },
+                                textStyle: {
+                                    color: '#fff',
+                                },
+                            },
+                            splitLine: { //坐标轴在 grid 区域中的分隔线。
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.2)',
+                                    type: 'dotted',
+                                }
+                            }
+                        }],
+                        series: [{
+                            name: '泊位平均利用率',
+                            type: 'line',
+                            smooth: false,
+                            lineStyle: {
+                                normal: {
+                                    width: 2
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: 'rgb(137,189,27)'
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0.8,
+                                        color: 'rgba(0, 136, 212, 0)'
+
+                                    }, {
+                                        offset: 0,
+                                        color: 'rgba(0, 136, 212, 0.3)'
+
+                                    }], false),
+                                    shadowColor: 'rgba(0, 0, 0, 0.1)',
+                                    shadowBlur: 10
+                                },
+
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: 'rgb(0,136,212)'
+                                }
+                            },
+
+                            data: newdata
+                        },]
+
+
+                    }
+                );
+
+            }
+        })
+    }
+
+    function draw_block_rate(scale) {
+        block_scale = scale
+        console.log(scale);
+        $.ajax({
+            url: "{% url 'visualization:block_rate' %}",
+            data: {
+                scale: block_scale,
+                block_id: block_id,
+                road_name: road_name,
+                direction: direction,
+                left_or_right: left_or_right,
+                datetime: '{{ datetime }}'
+            },
+            success: function (result) {
+                {#                console.log(JSON.parse(result)[1]);#}
+                timeplot = JSON.parse(result)[0];
+                datat = JSON.parse(result)[1];
+                if (block_scale == 'day' || block_scale == 'avg') {
+                    timeplot_1 = []
+                    for (var i = 0; i < timeplot.length; i++) {
+                        number = timeplot[i].slice(-9, -3)
+                        timeplot_1.push(number)
+
+                    }
+                    timeplot = timeplot_1
+
+
+                }
+
+
+                newdata = []
+                for (var i = 0; i < datat.length; i++) {
+                    number = datat[i].toFixed(2)
+                    newdata.push(number)
+                }
+                //console.log(result[0], result[1]);
+                var myChart2 = echarts.init(document.getElementById('main2'))
+                myChart2.setOption(
+                    {
+                        grid: {
+                            x: 35,
+                            y: 25,
+                            x2: 35,
+                            y2: 25,
+                        },
+                        tooltip: {//鼠标指上时的标线
+                            trigger: 'axis',//坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
+                            axisPointer: {
+                                lineStyle: {
+                                    color: '#fff'
+                                }
+                            }
+                        },
+                        xAxis: [{
+                            type: 'category',
+                            splitNumber: 100,
+                            boundaryGap: false,
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#57617B'
+                                }
+                            },
+                            axisLabel: {
+                                show: false,
+                                textStyle: {
+                                    color: '#fff',
+                                },
+                            },
+                            data: timeplot
+                        }],
+                        yAxis: [{
+                            type: 'value',
+                            axisTick: {
+                                show: false//是否显示坐标刻度线
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#57617B',
+
+                                }
+                            },
+                            axisLabel: {
+                                margin: 10,
+                                textStyle: {
+                                    fontSize: 14
+                                },
+                                textStyle: {
+                                    color: '#fff',
+                                },
+                            },
+                            splitLine: { //坐标轴在 grid 区域中的分隔线。
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.2)',
+                                    type: 'dotted',
+                                }
+                            }
+                        }],
+                        series: [{
+                            name: '泊位平均利用率',
+                            type: 'line',
+                            smooth: false,
+                            lineStyle: {
+                                normal: {
+                                    width: 2
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: 'rgb(137,189,27)'
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0.8,
+                                        color: 'rgba(0, 136, 212, 0)'
+
+                                    }, {
+                                        offset: 0,
+                                        color: 'rgba(0, 136, 212, 0.3)'
+
+                                    }], false),
+                                    shadowColor: 'rgba(0, 0, 0, 0.1)',
+                                    shadowBlur: 10
+                                },
+
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: 'rgb(0,136,212)'
+                                }
+                            },
+
+                            data: newdata
+                        },]
+
+
+                    }
+                );
+
+            }
+        })
+    }
+
+    $(function () {
+        var a = $('.visualSssf_left a');
+        for (var i = 0; i < a.length; i++) {
+            a[i].index = i;
+            a[i].onclick = function () {
+                for (var i = 0; i < a.length; i++) {
+                    a[i].className = ''
+                }
+                this.className = 'active'
+            }
+        }
+
+        var sfzcllH = $('.sfzcll_box').height()
+        var sfzcllHtwo = sfzcllH - 2
+        $('.sfzcll_box').css('line-height', sfzcllH + 'px')
+        $('.sfzcll_smallBk>div').css('line-height', sfzcllHtwo + 'px')
+
+        //删除加载动画
+        $('#load').fadeOut(1000);
+        setTimeout(function () {
+                $('#load').remove()
+            }
+            , 1100);
+
+    });
+
+    var map = new AMap.Map('map_container', {
+        mapStyle: 'amap://styles/cf412e175277f14152cd34ec5cf6f9e2',
+        expandZoomRange: true,
+        zoom: 16,//级别
+        zooms: [3, 20],
+        center: [113.935197, 22.51659],//中心点坐标
+        features: ['bg', 'road', 'building'],
+        showLabel: true
+    });
+    {# info of blocks #}
+    var block_location = [];
+    var block_capacity = [];
+    var block_used = [];
+    {# statistical data of blocks #}
+    var all_block = 0;
+    var congestion_block = 0;
+    var underuse_block = 0;
+    var balance_block = 0;
+    var all_berth = 0;
+    var avg_occupancy = {{ avg_occupancy }};
+    var used_proportion = 0;
+    var unused_proportion = 0;
+    {# info of selected road #}
+    var block_id = 35;
+    var road_name = '海德二道';
+    var left_or_right = '靠右';
+    var direction = '南侧';
+    var block_scale = 'avg';
+    {% for block_id, info in block_info %}
+        block_capacity[{{ block_id }}] = {{ info.capacity }};
+        block_used[{{ block_id }}] = {{ info.used_count }};
+        {% for shape in info.shape %}
+            block_location[{{ block_id }}] = {{ shape }};
+            var polyline = new AMap.Polyline({
+                path: {{ shape }},
+                bubble: true,
+                borderWeight: 1, // 线条宽度，默认为 1
+                strokeWeight: 3,
+                strokeColor: '{{ info.color }}', // 线条颜色
+                lineJoin: 'round', // 折线拐点连接处样式
+                extData: '{{ block_id }}',
+            });
+            polyline.on('mouseover', function (ev) {
+                ev.target.setOptions({
+                    strokeWeight: 7,
+                });
+            });
+            polyline.on('mouseout', function (ev) {
+                ev.target.setOptions({
+                    strokeWeight: 3,
+                });
+            });
+            polyline.on('click', function (ev) {
+                var content = ['{{ info.road_name }}{{ info.direction }}{{ info.left_or_right }}',
+                    '{{ info.used_count }}/{{ info.capacity }}'];
+                var infoWindow = new AMap.InfoWindow({
+                    content: content.join("<br>")  //传入 dom 对象，或者 html 字符串
+                });
+                {#infoWindow.open(map, ev.lnglat);#}
+                inner_text = '<p class="col text-center font-weight-bold" style="margin:0;">' + '{{ info.road_name }}' + '{{ info.direction }}' + '{{ info.left_or_right }}' + '</p>'
+                inner_text += '<br>容量: ' + block_capacity[{{ block_id }}].toString()
+                    + ' 占用量: ' + block_used[{{ block_id }}].toString()
+                if (block_used[{{ block_id }}] / block_capacity[{{ block_id }}] > 0.85) {
+                    inner_text += '<span class="text-danger"> 占用率: '
+                    inner_text += (Math.round(block_used[{{ block_id }}] / block_capacity[{{ block_id }}] * 100)).toString() + '%</span><br>';
+                } else if (block_used[{{ block_id }}] / block_capacity[{{ block_id }}] < 0.7) {
+                    inner_text += '<span class="text-primary"> 占用率: '
+                    inner_text += (Math.round(block_used[{{ block_id }}] / block_capacity[{{ block_id }}] * 100)).toString() + '%</span><br>';
+                } else {
+                    inner_text += '<span class="text-warning"> 占用率: '
+                    inner_text += (Math.round(block_used[{{ block_id }}] / block_capacity[{{ block_id }}] * 100)).toString() + '%</span><br>';
+                }
+                var infoWindow = new AMap.InfoWindow({
+                    content: inner_text + '加载中...',  //传入 dom 对象，或者 html 字符串
+                });
+                infoWindow.open(map, ev.lnglat);
+                draw_parking_proportion({{ block_id }}, infoWindow, inner_text, ev.lnglat)
+            });
+            map.add(polyline);
+        {% endfor %}
+    {% endfor %}
+
+    function show(flag) {
+        if (flag == 1) {
+            var rank = 'use';
+        } else {
+            var rank = 'available';
+        }
+        $.ajax({
+            url: "{% url 'visualization:use_rank' %}",
+            data: {
+                rank: rank,
+                datetime: '{{ datetime }}',
+            },
+            cache: false,
+            success: function (result) {
+                use_rank = JSON.parse(result);
+                var myItems = ["<div class=\"list-group \" >"];
+                all_block = 0;
+                congestion_block = 0;
+                underuse_block = 0;
+                balance_block = 0;
+                all_berth = 0;
+                for (var i = 0; i < use_rank.length; i++) {
+                    if (block_location[parseInt(use_rank[i].block_id)] == undefined) {
+                        continue;
+                    }
+                    {# count data for dash #}
+                    all_block += 1;
+                    if (parseFloat(use_rank[i].occupancy_rate) > 0.85) {
+                        congestion_block += 1;
+                    } else if (parseFloat(use_rank[i].occupancy_rate) < 0.7) {
+                        underuse_block += 1;
+                    } else {
+                        balance_block += 1;
+                    }
+                    all_berth += parseInt(use_rank[i].capacity)
+                    {# count end #}
+                    myItems.push(
+                        "<a href=\"javascript:use_block_update_pic(" + use_rank[i].block_id + ',\'' + use_rank[i].road_name
+                        + '\',\'' + use_rank[i].direction + '\',\'' + use_rank[i].left_or_right + "\')\" "
+                        + "class=\"list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-transparent\">"
+                        + '<span><span class="font-weight-bold text-light">' + use_rank[i].road_name + '</span><span class="font-weight-normal text-light">'
+                        + use_rank[i].direction + use_rank[i].left_or_right + '</span></span>' + '<span class=\"text-light\">'
+                        + block_used[parseInt(use_rank[i].block_id)] + '/'
+                        + block_capacity[parseInt(use_rank[i].block_id)] + '</span>'
+                        + '<span class="badge badge-primary badge-pill">'
+                        + use_rank[i].occupancy_rate + '</span>' + "</a>");
+                }
+                myItems.push('</div>');
+                $("#sorted_occupancy").html('');
+                $("#sorted_occupancy").append(myItems.join(""));
+                draw_sum_up_pie();
+            },
+        })
+            .fail(function (xhr, status, errorThrown) {
+                alert("Sorry, there was a problem!");
+                console.log("Error: " + errorThrown);
+                console.log("Status: " + status);
+                console.dir(xhr);
+            });
+    }
+
+    function draw_sum_up_pie() {
+        option = {
+            series: [{
+                name: '南山区76区块（1735泊位）总体状态',
+                type: 'pie',
+                radius: '75%',
+                itemStyle: {
+                    normal: {
+                        label: {
+                            position: 'outer',
+                            formatter: "{b}: {c} ({d}%)",
+                            textStyle: {
+                                color: '#fff'
+                            }
+                        },
+                        labelLine: {
+                            show: true
+                        }
+                    }
+                },
+                data: [
+                    {name: '饱和', value: congestion_block},
+                    {name: '平衡', value: balance_block},
+                    {name: '闲置', value: underuse_block}
+                ]
+            }]
+        }
+        var myChart = echarts.init(document.getElementById('sum_up_pie'));
+        myChart.setOption(option);
+    }
+
+    function draw_road_predict(road_name) {
+        $.ajax({
+            url: "{% url 'visualization:draw_road_predict' %}",
+            data: {
+                road_name: road_name
+            },
+            success: function (result) {
+                timesplot = JSON.parse(result)[0]
+                predict_1 = JSON.parse(result)[1]
+                ground_truth_1 = JSON.parse(result)[2]
+
+
+                predict = []
+                ground_truth = []
+
+                for (var i = 0; i < predict_1.length; i++) {
+                    number = predict_1[i].toFixed(2)
+                    predict.push(number)
+                }
+                for (var i = 0; i < ground_truth_1.length; i++) {
+                    number = ground_truth_1[i].toFixed(2)
+                    ground_truth.push(number)
+                }
+                option = {
+                    grid: {
+                        x: 35,
+                        y: 40,
+                        x2: 35,
+                        y2: 25,
+                    },
+                    title: {
+                        text: '每小时车位平均占用数量预测值与真实值对比',
+                        //subtext: '已占用车位数量',
+                        textStyle: {
+                            color: "#fff",
+                            fontSize: 12
+                        }
+
+
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    {#legend: {#}
+                    {#    data: ['蒸发量', '降水量']#}
+
+                    toolbox: {
+                        show: true,
+                        iconStyle: {
+                            color: "#fff"
+                        },
+                        feature: {
+                            dataView: {show: true, readOnly: false},
+                            magicType: {show: true, type: ['line', 'bar']},
+                            restore: {show: true},
+                            saveAsImage: {show: true}
+                        }
+                    },
+                    calculable: true,
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: timesplot,
+                            axisLine: {
+
+                                lineStyle: {
+                                    color: '#fff',
+
+                                }
+
+                            },
+                            axisLabel: {
+                                show: false
+                            }
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#fff',
+
+                                }
+                            },
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '预测值',
+                            type: 'bar',
+                            data: predict,
+                            {#markPoint: {#}
+                            {#    data: [#}
+                            {#        {type: 'max', name: '最大值'},#}
+                            {#        {type: 'min', name: '最小值'}#}
+                            {#    ]},#}
+
+                        },
+                        {
+                            name: '真实值',
+                            type: 'bar',
+                            data: ground_truth,
+                            {#markPoint: {#}
+                            {#    data: [#}
+                            {#        {name: '年最高', value: 182.2, xAxis: 7, yAxis: 183},#}
+                            {#        {name: '年最低', value: 2.3, xAxis: 11, yAxis: 3}#}
+                            {#    ]},#}
+
+                        }
+                    ]
+                };
+                var myChart = echarts.init(document.getElementById('main5'))
+                myChart.setOption(
+                    option
+                );
+
+
+            }
+        })
+
+    }
+
+    function use_block_update_pic(t_block_id, t_road_name, t_direction, t_left_or_right) {
+        block_id = t_block_id;
+        road_name = t_road_name;
+        direction = t_direction;
+        left_or_right = t_left_or_right;
+        draw_block_rate('avg');
+        draw_block_vote(t_block_id, t_road_name, t_direction, t_left_or_right);
+        draw_road_predict(road_name);
+        {#draw_block_rate(block_scale);#}
+        {# extra task: locate block been clicked #}
+        if (block_location[t_block_id] == undefined) {
+            alert('无位置信息');
+        } else {
+            map.panTo(block_location[t_block_id][1]);
+            inner_text = '<p class="col text-center font-weight-bold" style="margin:0;">' + t_road_name + t_direction + t_left_or_right + '</p>'
+            inner_text += '<br>容量: ' + block_capacity[t_block_id].toString()
+                + ' 占用量: ' + block_used[t_block_id].toString()
+            if (block_used[t_block_id] / block_capacity[t_block_id] > 0.85) {
+                inner_text += '<span class="text-danger"> 占用率: '
+                inner_text += (Math.round(block_used[t_block_id] / block_capacity[t_block_id] * 100)).toString() + '%</span><br>';
+            } else if (block_used[t_block_id] / block_capacity[t_block_id] < 0.7) {
+                inner_text += '<span class="text-primary"> 占用率: '
+                inner_text += (Math.round(block_used[t_block_id] / block_capacity[t_block_id] * 100)).toString() + '%</span><br>';
+            } else {
+                inner_text += '<span class="text-warning"> 占用率: '
+                inner_text += (Math.round(block_used[t_block_id] / block_capacity[t_block_id] * 100)).toString() + '%</span><br>';
+            }
+            var infoWindow = new AMap.InfoWindow({
+                content: inner_text + '加载中...',  //传入 dom 对象，或者 html 字符串
+            });
+            infoWindow.open(map, block_location[t_block_id][1]);
+            draw_parking_proportion(t_block_id, infoWindow, inner_text, block_location[t_block_id][1]);
+
+        }
+    }
+
+    function draw_parking_proportion(block_id, infoWindow, inner_text, show_location) {
+        $.ajax({
+            url: "{% url 'visualization:parking_proportion' %}",
+            data: {
+                block_id: block_id,
+                datetime: '{{ datetime }}',
+                capacity: block_capacity[block_id],
+                occupied: block_used[block_id],
+            },
+            success: function (result) {
+                infoWindow.close();
+                let detail_content = '';
+                detail_content += '<div>';
+                detail_content += inner_text + result;
+                detail_content += '</div>';
+                infoWindow = new AMap.InfoWindow({
+                    content: detail_content,  //传入 dom 对象，或者 html 字符串
+                });
+                infoWindow.open(map, show_location);
+            }
+        })
+    }
+
+    function draw_block_vote(block_id, road_name, direction, left_or_right) {
+        console.log(block_id, road_name, direction, left_or_right, '{{ datetime }}');
+        $.ajax({
+            url: "{% url 'visualization:block_vote' %}",
+            data: {
+                block_id: block_id,
+                road_name: road_name,
+                direction: direction,
+                left_or_right: left_or_right,
+                datetime: '{{ datetime }}'
+            },
+            success: function (result) {
+                timeplot = JSON.parse(result)[0];
+                data1 = JSON.parse(result)[1];
+                data2 = JSON.parse(result)[2];
+                console.log(data1);
+                timeplot_1 = []
+                for (var i = 0; i < timeplot.length; i++) {
+                    number = timeplot[i].slice(-9, -3)
+                    timeplot_1.push(number)
+
+                }
+                timeplot = timeplot_1
+
+
+                newdata = []
+                for (var i = 0; i < data1.length; i++) {
+                    number = data1[i].toFixed(2)
+                    newdata.push(number)
+                }
+                var myChart3 = echarts.init(document.getElementById('main3'))
+                myChart3.setOption(
+                    {
+                        grid: {
+                            x: 35,
+                            y: 25,
+                            x2: 35,
+                            y2: 25,
+                        },
+                        tooltip: {//鼠标指上时的标线
+                            trigger: 'axis',//坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。
+                            axisPointer: {
+                                lineStyle: {
+                                    color: '#fff'
+                                }
+                            }
+                        },
+                        xAxis: [{
+                            type: 'category',
+                            splitNumber: 100,
+                            boundaryGap: false,
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#57617B'
+                                }
+                            },
+                            axisLabel: {
+                                show: false,
+                                textStyle: {
+                                    color: '#fff',
+                                },
+                            },
+                            data: timeplot
+                        }],
+                        yAxis: [{
+                            type: 'value',
+                            min: -1,
+                            max: 1,
+                            axisTick: {
+                                show: false//是否显示坐标刻度线
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#57617B',
+
+                                }
+                            },
+                            axisLabel: {
+                                margin: 10,
+                                textStyle: {
+                                    fontSize: 14
+                                },
+                                textStyle: {
+                                    color: '#fff',
+                                },
+
+
+                            },
+                            splitLine: { //坐标轴在 grid 区域中的分隔线。
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.2)',
+                                    type: 'dotted',
+                                }
+                            }
+                        }],
+                        series: [
+                            {
+
+                                name: 'BCU指数',
+                                type: 'line',
+                                smooth: true,
+                                lineStyle: {
+                                    normal: {
+                                        width: 2
+                                    }
+                                },
+                                {% comment %}areaStyle: {
+                                    normal: {
+                                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                            offset: 0.8,
+                                            color: 'rgba(0, 136, 212, 0.3)'
+
+                                        }, {
+                                            offset: 0,
+                                            color: 'rgba(0, 136, 212, 0)'
+
+                                        }], false),
+                                        shadowColor: 'rgba(0, 0, 0, 0.1)',
+                                        shadowBlur: 10
+                                    },
+
+                                },{% endcomment %}
+                                itemStyle: {
+                                    normal: {
+                                        color: 'rgb(0,136,212)'
+                                    }
+                                },
+                                data: newdata,
+
+                                markLine: {
+                                    symbol: 'none',
+                                    lineStyle: {
+                                        type: 'solid',
+                                        color: 'yellow'
+
+                                    },
+                                    silent: true,
+                                    data: [{
+                                        yAxis: 1 / 3
+                                    }, {
+                                        yAxis: -1 / 3
+                                    }]
+                                }
+                            },
+                            {
+                                name: '价格建议(-1降价, 0不变, 1涨价)',
+                                type: 'line',
+                                smooth: false,
+                                lineStyle: {
+                                    normal: {
+                                        width: 2
+                                    }
+                                },
+                                {% comment %}areaStyle: {
+                                    normal: {
+                                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                            offset: 0.8,
+                                            color: 'rgba(219, 50, 51, 0.3)'
+
+                                        }, {
+                                            offset: 0,
+                                            color: 'rgba(219, 50, 51, 0)'
+
+                                        }], false),
+                                        shadowColor: 'rgba(0, 0, 0, 0.1)',
+                                        shadowBlur: 10
+                                    }
+                                },{% endcomment %}
+                                itemStyle: {
+                                    normal: {
+                                        color: 'rgb(219,50,51)'
+                                    }
+                                },
+                                data: data2
+                            }
+
+                        ]
+
+
+                    }
+                );
+
+            }
+
+
+        })
+    }
+
+
+    show(1);
+    draw_block_rate('avg')
+    draw_aggregate_rates('week')
+    draw_block_vote(35, '海德二道', '南侧', '靠右')
+    draw_road_predict("文心四路")
+
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+.info {
+    margin-right: 0;
+    margin-left: 0;
+    border-top-color: grey;
+    padding: .75rem 1.25rem;
+    /*margin-bottom: 1rem;*/
+    /*border-radius: .25rem;*/
+    position: fixed;
+    top: 0;
+    width: 22rem;
+    border-width: 0;
+    right: 0;
+    /*box-shadow: 0 2px 6px 0 rgba(114, 124, 245, .5);*/
+}
+
+#container {
+    height: 57%;
+    width: 77%;
+}
+
+#canvas_of_vote {
+    background-color: whitesmoke;
+    padding: unset;
+    min-width: unset;
+    top: unset;
+    right: unset;
+    height: 43%;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+}
+
+#main-dash {
+    background-color: transparent;
+    height: 57%;
+    width: 23%;
+}
+
+#sorted_occupancy {
+    /*width: 100%;*/
+    max-height: 75%;
+    overflow-y: auto;
+}
