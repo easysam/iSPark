@@ -415,7 +415,8 @@
                 road_name: road_name,
                 direction: direction,
                 left_or_right: left_or_right,
-                datetime: '{{ datetime }}'
+                datetime: '{{ datetime }}',
+                version: 'echart'
             },
             success: function (result) {
                 {#                console.log(JSON.parse(result)[1]);#}
@@ -939,7 +940,8 @@
                 road_name: road_name,
                 direction: direction,
                 left_or_right: left_or_right,
-                datetime: '{{ datetime }}'
+                datetime: '{{ datetime }}',
+                version: 'echart'
             },
             success: function (result) {
                 timeplot = JSON.parse(result)[0];

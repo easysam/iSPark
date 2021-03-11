@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="05b0dab7-ad4d-4d07-ae91-67cd11e66f2c" name="Default Changelist" comment="" />
+    <list default="true" id="05b0dab7-ad4d-4d07-ae91-67cd11e66f2c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visualization/templates/visualization/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/visualization/templates/visualization/test.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,11 +42,15 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/visualization/views.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="JupyterTrust" id="1a6e746c-8c16-4de5-aaa7-b6a0b5fdf590" />
   <component name="ProjectId" id="1PjCf2vKUy27kzym6zjywDRU2Td" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -49,6 +58,7 @@
   <component name="PropertiesComponent">
     <property name="DatabaseDriversLRU" value="mysql" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
@@ -214,7 +224,8 @@
       <workItem from="1572923401085" duration="12000" />
       <workItem from="1572923424364" duration="12000" />
       <workItem from="1602574880877" duration="1176000" />
-      <workItem from="1615468158924" duration="6308000" />
+      <workItem from="1615468158924" duration="7942000" />
+      <workItem from="1615476131270" duration="1060000" />
     </task>
     <servers />
   </component>
