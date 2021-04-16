@@ -1,6 +1,6 @@
 # iSPark: 大数据驱动的智能路内停车管理
-旧版：http://62.234.214.208:8080/visualization <br>旧版在服务器端使用Matplotlib绘图，并传输到网页进行显示。前端简单一些。<br>
-新版：http://62.234.214.208:8080/visualization/test <br>新版将数据传输到网页端，并在网页端使用ECharts绘图并显示。前端复杂一些。
+旧版在服务器端使用Matplotlib绘图，并传输到网页进行显示。前端简单一些。<br>
+新版将数据传输到网页端，并在网页端使用ECharts绘图并显示。前端复杂一些。
 
 服务器端语言是Python，依赖的库有：`Django`、`pandas`、`mysqlclient`
 
